@@ -3,9 +3,7 @@ require "sidekiq/unique_scheduler/version"
 
 module Sidekiq
   module UniqueScheduler
-    mattr_accessor :master_server do
-      Proc.new
-    end
+    mattr_accessor :master_server
 
     def self.master_server?
       # すでに master が存在している状態で、新規にサーバーを立ち上げた場合に
@@ -13,7 +11,7 @@ module Sidekiq
       # 判定されると `register_server` メソッドで無限ループするため、すでに
       # `master_server` として稼働しているサーバーが存在するときは scheduler の
       # ロードはスキップする
-      !Sidekiq.redis {|conn| conn.get('sidekiq:schedules:master')} && (`hostname`.chomp == self.master_server.call)
+      !Sidekiq.redis {|conn| conn.get('sidekiq:schedules:master')} && (`hostname`.chomp == self.master_server&.call)
     end
 
     def self.register_server
