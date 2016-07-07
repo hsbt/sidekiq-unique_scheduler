@@ -1,4 +1,3 @@
-require 'sidekiq'
 require 'sidekiq/scheduler'
 require "sidekiq/unique_scheduler/version"
 
