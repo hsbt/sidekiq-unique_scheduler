@@ -14,8 +14,6 @@ Gem::Specification.new do |spec|
   spec.homepage      = "https://github.com/hsbt/sidekiq-unique_scheduler"
   spec.license       = "MIT"
 
-  spec.metadata['allowed_push_host'] = ""
-
   spec.files         = `git ls-files -z`.split("\x0").reject { |f| f.match(%r{^(test|spec|features)/}) }
   spec.bindir        = "exe"
   spec.executables   = spec.files.grep(%r{^exe/}) { |f| File.basename(f) }
