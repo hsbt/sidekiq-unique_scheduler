@@ -41,7 +41,6 @@ Sidekiq.configure_server do |config|
   config.on(:startup) do
     if Sidekiq::UniqueScheduler.master_server?
       Sidekiq::UniqueScheduler.register_server
-      Sidekiq.schedule = YAML.load_file(File.expand_path("../../../config/scheduler.yml",__FILE__))
       Sidekiq::Scheduler.reload_schedule!
     else
       Sidekiq::Scheduler.enabled = false
@@ -52,4 +51,4 @@ Sidekiq.configure_server do |config|
       Sidekiq::UniqueScheduler.reset_master_server!
     end
   end
-end if Rails.env.production?
+end
