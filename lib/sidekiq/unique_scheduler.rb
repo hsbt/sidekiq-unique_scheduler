@@ -1,5 +1,5 @@
 require 'socket'
-require 'sidekiq/scheduler'
+require 'sidekiq-scheduler'
 require "sidekiq/unique_scheduler/version"
 
 module Sidekiq
