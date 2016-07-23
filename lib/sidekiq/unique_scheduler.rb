@@ -1,3 +1,4 @@
+require 'socket'
 require 'sidekiq/scheduler'
 require "sidekiq/unique_scheduler/version"
 
@@ -11,7 +12,7 @@ module Sidekiq
       # 判定されると `register_server` メソッドで無限ループするため、すでに
       # `master_server` として稼働しているサーバーが存在するときは scheduler の
       # ロードはスキップする
-      !Sidekiq.redis {|conn| conn.get('sidekiq:schedules:master')} && (`hostname`.chomp == self.master_server&.call)
+      !Sidekiq.redis {|conn| conn.get('sidekiq:schedules:master')} && (Socket.gethostname.chomp == self.master_server&.call)
     end
 
     def self.register_server
@@ -26,11 +27,11 @@ module Sidekiq
           end
         end
       end
-      Sidekiq.redis {|conn| conn.set('sidekiq:schedules:master', `hostname`.chomp) }
+      Sidekiq.redis {|conn| conn.set('sidekiq:schedules:master', Socket.gethostname.chomp) }
     end
 
     def self.reset_master_server!
-      if `hostname`.chomp == Sidekiq.redis {|conn| conn.get('sidekiq:schedules:master')}
+      if Socket.gethostname.chomp == Sidekiq.redis {|conn| conn.get('sidekiq:schedules:master')}
         Sidekiq.redis {|conn| conn.del('sidekiq:schedules:master')}
       end
     end
