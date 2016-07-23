@@ -4,7 +4,9 @@ require "sidekiq/unique_scheduler/version"
 
 module Sidekiq
   module UniqueScheduler
-    mattr_accessor :master_server
+    class << self
+      attr_accessor :master_server
+    end
 
     def self.master_server?
       # すでに master が存在している状態で、新規にサーバーを立ち上げた場合に
