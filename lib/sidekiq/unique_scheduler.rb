@@ -7,6 +7,7 @@ module Sidekiq
   module UniqueScheduler
     class << self
       def lock
+        cleanup_diary_node
         sessionid = Diplomat::Session.create({:Node => Socket.gethostname.chomp, :Name => "sidekiq-unique_scheduler"})
         if !(lock = Diplomat::Lock.acquire("/sidekiq-unique_scheduler/lock", sessionid))
           Diplomat::Session.destroy(sessionid)
@@ -22,6 +23,15 @@ module Sidekiq
 
       def session_list
         Diplomat::Session.list.select{|s| s['Name'] == "sidekiq-unique_scheduler" }
+      end
+
+      def cleanup_diary_node
+        session_list.each do |session|
+          node = Diplomat::Health.node(session['Node'])
+          if node[0] && node[0]['Status'] == 'critical'
+            Diplomat::Session.destroy(session['ID'])
+          end
+        end
       end
     end
   end
