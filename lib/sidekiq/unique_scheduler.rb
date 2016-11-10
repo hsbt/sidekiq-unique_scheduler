@@ -21,6 +21,8 @@ module Sidekiq
         end
       end
 
+      private
+
       def session_list
         Diplomat::Session.list.select{|s| s['Name'] == "sidekiq-unique_scheduler" }
       end
