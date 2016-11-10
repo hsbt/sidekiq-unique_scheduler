@@ -20,15 +20,7 @@ Or install it yourself as:
 
 ## Usage
 
-You need to add hostname for detection of unique server used `Proc` object.
-
-Example of hard coded hostname
-
-```rb
-Sidekiq::UniqueScheduler.master_server = -> {
-  `server.example.com`
-}
-```
+You need to setup consul >= 0.5.0 to all sidekiq workers.
 
 ## Development
 
