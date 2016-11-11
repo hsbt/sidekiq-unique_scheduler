@@ -42,6 +42,7 @@ end
 Sidekiq.configure_server do |config|
   config.on(:startup) do
     if Sidekiq::UniqueScheduler.lock
+      Sidekiq.schedule = YAML.load_file(File.expand_path("../../../config/scheduler.yml", __FILE__))
       Sidekiq::Scheduler.reload_schedule!
     else
       Sidekiq::Scheduler.enabled = false
