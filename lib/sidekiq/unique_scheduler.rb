@@ -6,6 +6,8 @@ require "sidekiq/unique_scheduler/version"
 module Sidekiq
   module UniqueScheduler
     class << self
+      attr_accessor :schedule
+
       def lock
         cleanup_diary_node
         sessionid = Diplomat::Session.create({:Node => Socket.gethostname.chomp, :Name => "sidekiq-unique_scheduler"})
@@ -42,7 +44,7 @@ end
 Sidekiq.configure_server do |config|
   config.on(:startup) do
     if Sidekiq::UniqueScheduler.lock
-      Sidekiq.schedule = YAML.load_file(File.expand_path("../../../config/scheduler.yml", __FILE__))
+      Sidekiq.schedule = Sidekiq::UniqueScheduler.schedule
       Sidekiq::Scheduler.reload_schedule!
     else
       Sidekiq::Scheduler.enabled = false
