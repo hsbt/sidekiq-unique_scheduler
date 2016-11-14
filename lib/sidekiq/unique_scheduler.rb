@@ -6,11 +6,11 @@ require "sidekiq/unique_scheduler/version"
 module Sidekiq
   module UniqueScheduler
     class << self
-      attr_accessor :schedule
+      attr_accessor :schedule, :node_prefix, :node_suffix
 
       def lock
         cleanup_diary_node
-        sessionid = Diplomat::Session.create({:Node => Socket.gethostname.chomp, :Name => "sidekiq-unique_scheduler"})
+        sessionid = Diplomat::Session.create({:Node => nodename, :Name => "sidekiq-unique_scheduler"})
         if !(lock = Diplomat::Lock.acquire("/sidekiq-unique_scheduler/lock", sessionid))
           Diplomat::Session.destroy(sessionid)
         end
@@ -36,6 +36,10 @@ module Sidekiq
             Diplomat::Session.destroy(session['ID'])
           end
         end
+      end
+
+      def nodename
+        node_prefix + Socket.gethostname.chomp node_suffix
       end
     end
   end
