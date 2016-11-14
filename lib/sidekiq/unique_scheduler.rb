@@ -18,7 +18,7 @@ module Sidekiq
       end
 
       def unlock
-        if node_session = session_list.find{|s| s['Node'] == Socket.gethostname.chomp }
+        if node_session = session_list.find{|s| s['Node'] == nodename }
           Diplomat::Session.destroy(node_session['ID'])
         end
       end
