@@ -39,7 +39,7 @@ module Sidekiq
       end
 
       def nodename
-        node_prefix + Socket.gethostname.chomp + node_suffix
+        "#{node_prefix}#{Socket.gethostname.chomp}#{node_suffix}"
       end
     end
   end
