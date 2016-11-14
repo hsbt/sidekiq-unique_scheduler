@@ -18,6 +18,14 @@ class Sidekiq::UniqueSchedulerTest < Minitest::Test
     Sidekiq::UniqueScheduler.unlock
   end
 
+  def test_unique_scheduler_lock_with_another_session
+    Diplomat::Session.expects(:list).returns([]).once
+    Diplomat::Session.expects(:create).returns('foo').once
+    Diplomat::Lock.expects(:acquire).with("/sidekiq-unique_scheduler/lock", 'foo').returns(false).once
+    Diplomat::Session.expects(:destroy).with('foo').once
+    refute Sidekiq::UniqueScheduler.lock
+  end
+
   def test_unique_scheduler_lock_with_dirty_exit
     Diplomat::Session.expects(:list).returns([{'Node' => Socket.gethostname.chomp + "-2", 'Name' => "sidekiq-unique_scheduler"}]).once
     Diplomat::Health.expects(:node).with(Socket.gethostname.chomp + "-2").returns([{'ID' => 'foo', 'Status' => 'critical'}]).once
