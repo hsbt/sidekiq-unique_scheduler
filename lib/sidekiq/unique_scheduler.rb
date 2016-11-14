@@ -9,7 +9,7 @@ module Sidekiq
       attr_accessor :schedule, :node_prefix, :node_suffix
 
       def lock
-        cleanup_diary_node
+        cleanup_dirty_node
         sessionid = Diplomat::Session.create({:Node => nodename, :Name => "sidekiq-unique_scheduler"})
         if !(lock = Diplomat::Lock.acquire("/sidekiq-unique_scheduler/lock", sessionid))
           Diplomat::Session.destroy(sessionid)
@@ -29,7 +29,7 @@ module Sidekiq
         Diplomat::Session.list.select{|s| s['Name'] == "sidekiq-unique_scheduler" }
       end
 
-      def cleanup_diary_node
+      def cleanup_dirty_node
         session_list.each do |session|
           node = Diplomat::Health.node(session['Node'])
           if node[0] && node[0]['Status'] == 'critical'
